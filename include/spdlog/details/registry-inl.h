@@ -240,6 +240,13 @@ SPDLOG_INLINE void registry::drop_all()
     default_logger_.reset();
 }
 
+struct registry_storage {
+  alignas(alignof(registry)) unsigned char data[sizeof(registry)];
+  SPDLOG_INLINE registry& cast() { return (registry&)data; }
+};
+inline static registry_storage s_registrystrg = {0};
+SPDLOG_INLINE void registry::init() { new(&s_registrystrg.cast()) registry(); }
+
 // clean all resources and threads started by the registry
 SPDLOG_INLINE void registry::shutdown()
 {
@@ -254,6 +261,9 @@ SPDLOG_INLINE void registry::shutdown()
         std::lock_guard<std::recursive_mutex> lock(tp_mutex_);
         tp_.reset();
     }
+
+    s_registrystrg.cast().~registry();
+    std::memset(&s_registrystrg,0,sizeof(s_registrystrg));
 }
 
 SPDLOG_INLINE std::recursive_mutex &registry::tp_mutex()
@@ -289,9 +299,8 @@ SPDLOG_INLINE void registry::set_levels(log_levels levels, level::level_enum *gl
 }
 
 SPDLOG_INLINE registry &registry::instance()
-{
-    static registry s_instance;
-    return s_instance;
+{    
+    return s_registrystrg.cast();
 }
 
 SPDLOG_INLINE void registry::throw_if_exists_(const std::string &logger_name)

@@ -83,6 +83,7 @@ public:
     // set levels for all existing/future loggers. global_level can be null if should not set.
     void set_levels(log_levels levels, level::level_enum *global_level);
 
+    static void init();
     static registry &instance();
 
 private:

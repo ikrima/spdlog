@@ -96,7 +96,10 @@ SPDLOG_INLINE void drop_all()
 {
     details::registry::instance().drop_all();
 }
-
+SPDLOG_INLINE void init()
+{
+  details::registry::init();
+}
 SPDLOG_INLINE void shutdown()
 {
     details::registry::instance().shutdown();
