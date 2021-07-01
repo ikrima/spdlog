@@ -9,6 +9,12 @@
 
 #pragma once
 
+// Beg #TPLibMod-spdlog:  Allow user customization point/macro override through header
+#ifdef SPGLOG_USER_CONFIG
+  #include SPGLOG_USER_CONFIG
+#endif
+// End TPLibMod
+
 #include <spdlog/common.h>
 #include <spdlog/details/registry.h>
 #include <spdlog/logger.h>
